@@ -72,7 +72,7 @@ client.on( 'messageCreate', async (message)=>{
 				// getGif();
 				try {
 					const response = await fetch(
-					  `https://g.tenor.com/v2/search?q=slap&key=AIzaSyD93bBnm77LNvu09WLC2XNXaNN7oCYPD2M&limit=16`
+					  `https://g.tenor.com/v2/search?q=slap&key=${process.env.TENOR_API&limit=16`
 					);
 					const data = await response.json();
 					// console.log(data);
