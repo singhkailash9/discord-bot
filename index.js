@@ -17,7 +17,7 @@ client.once('ready', () => {
 
 client.on( 'messageCreate', async (message)=>{
 	if (message.author.bot) return;
-	console.log(`[${message.author.tag}]: ${message.content}`);
+	//console.log(`[${message.author.tag}]: ${message.content}`);
 	if(message.content === 'hello'){
 		message.channel.send('hello');
 	}
