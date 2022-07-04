@@ -5,9 +5,11 @@ const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 const prefix = '++';
 const { getQuote } = require('./commands/quote')
 const { getMeme } = require('./commands/meme')
+// const { getPoke } = require('./commands/poke')
 const fetch = require('node-fetch');
 const embed = require('./events/embed')
 const { MessageEmbed } = require('discord.js');
+const getPokemons = require('json-pokemon/getPokemon');
 const botHelp = require('./commands/help')
 
 client.once('ready', () => {
@@ -36,14 +38,43 @@ client.on('messageCreate', async (message) => {
 			case 'help':
 				message.channel.send({ embeds: [botHelp] });
 				break;
+			case 'poke':
+				let pokeName = args[0];
+				pokeName = capitalizeFirstLetter(pokeName);
+				const data = getPokemons.getPokemonByName(pokeName)
+				function capitalizeFirstLetter(string) {
+					return string.charAt(0).toUpperCase() + string.slice(1);
+				}
+
+				// console.log(data)
+				if(data==null) {
+					message.channel.send('Couldn\'t find the pokemon')
+					break;
+				} 
+				function pad(n, length) {
+					var len = length - (''+n).length;
+					return (len > 0 ? new Array(++len).join('0') : '') + n
+				}
+				pokeID = pad(data.id, 3)
+				const pokeEmbed = new MessageEmbed()
+					.setTitle(data.name)
+					.setDescription(`Type: ${data.typeList}`)
+					.setImage(`https://raw.githubusercontent.com/Purukitto/pokemon-data.json/master/images/pokedex/thumbnails/${pokeID}.png`)
+					.setColor('#d32256')
+					.setTimestamp()
+					.setFooter({
+						text: (`ID: ${pokeID}`)
+					});
+				message.channel.send({ embeds: [pokeEmbed] });
+				break;
 			case 'pfp':
-					const user = message.mentions.users.first() || message.author;
-					const avatarEmbed = new MessageEmbed()
-						.setColor(0x333333)
-						.setDescription(`${user.username}'s Avatar`)
-						.setImage(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`)
-						.setTimestamp();
-					message.channel.send({embeds: [avatarEmbed]});
+				const user = message.mentions.users.first() || message.author;
+				const avatarEmbed = new MessageEmbed()
+					.setColor(0x333333)
+					.setDescription(`${user.username}'s Avatar`)
+					.setImage(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`)
+					.setTimestamp();
+				message.channel.send({ embeds: [avatarEmbed] });
 				break;
 			case 'quote':
 				getQuote().then(quote => message.channel.send(quote));
